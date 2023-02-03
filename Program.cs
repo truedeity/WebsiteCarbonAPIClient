@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using WebsiteCarbonModel;
 
 namespace WebsiteCarbonAPIClient
 {
@@ -14,8 +16,12 @@ namespace WebsiteCarbonAPIClient
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var carbonFootprint = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(carbonFootprint);
+                    var json = await response.Content.ReadAsStringAsync();
+                    CarbonFootprint carbonFootprint = JsonConvert.DeserializeObject<CarbonFootprint>(json);
+                    if (carbonFootprint != null && carbonFootprint.Green)
+                        Console.WriteLine($"Pass. Cleaner than {carbonFootprint.CleanerThan}");
+                    else
+                        Console.WriteLine($"Fail. Cleaner than {carbonFootprint.CleanerThan}");
                 }
                 else
                 {
